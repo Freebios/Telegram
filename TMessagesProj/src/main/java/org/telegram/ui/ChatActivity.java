@@ -255,6 +255,7 @@ import org.telegram.ui.Components.voip.CellFlickerDrawable;
 import org.telegram.ui.Components.voip.VoIPHelper;
 import org.telegram.ui.Delegates.ChatActivityMemberRequestsDelegate;
 import org.telegram.ui.Gifts.GiftSheet;
+import org.telegram.ui.Profile.ProfileActivity;
 import org.telegram.ui.Stars.StarReactionsOverlay;
 import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stars.StarsIntroActivity;
@@ -38687,7 +38688,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 args.putLong("user_id", user.id);
                 args.putBoolean("expandPhoto", expandPhoto);
                 ProfileActivity fragment = new ProfileActivity(args);
-                fragment.setPlayProfileAnimation(currentUser != null && currentUser.id == user.id ? 1 : 0);
+                args.putInt("playProfileAnimation", currentUser != null && currentUser.id == user.id ? 1 : 0);
                 AndroidUtilities.setAdjustResizeToNothing(getParentActivity(), classGuid);
                 presentFragment(fragment);
             }
@@ -40586,7 +40587,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 args.putLong("dialog_id", dialog_id);
             }
             ProfileActivity fragment = new ProfileActivity(args);
-            fragment.setPlayProfileAnimation(currentUser != null && currentUser.id == uid ? 1 : 0);
+            args.putInt("playProfileAnimation", currentUser != null && currentUser.id == uid ? 1 : 0);
             presentFragment(fragment);
         } else {
             Bundle args = new Bundle();

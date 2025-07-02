@@ -120,7 +120,7 @@ import org.telegram.ui.Gifts.GiftSheet;
 import org.telegram.ui.GradientClip;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PhotoViewer;
-import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Profile.ProfileActivity;
 import org.telegram.ui.Stars.StarGiftSheet;
 import org.telegram.ui.Stars.StarGiftUniqueActionLayout;
 import org.telegram.ui.Stars.StarsIntroActivity;

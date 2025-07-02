@@ -46,7 +46,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
-import org.telegram.messenger.SavedMessagesController;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.ConnectionsManager;
@@ -59,7 +58,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Business.BusinessLinksController;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Forum.ForumUtilities;
-import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Profile.ProfileActivity;
 import org.telegram.ui.Stories.StoriesUtilities;
 import org.telegram.ui.TopicsFragment;
 
@@ -574,13 +573,14 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
                 args.putBoolean("reportSpam", parentFragment.hasReportSpam());
                 args.putInt("actionBarColor", getThemedColor(Theme.key_actionBarDefault));
                 ProfileActivity fragment = new ProfileActivity(args, sharedMediaPreloader);
-                if (!monoforum) {
-                    fragment.setUserInfo(parentFragment.getCurrentUserInfo(), parentFragment.profileChannelMessageFetcher, parentFragment.birthdayAssetsFetcher);
-                }
                 if (fromChatAnimation) {
-                    fragment.setPlayProfileAnimation(byAvatar ? 2 : 1);
+                    args.putInt("playProfileAnimation", byAvatar ? 2 : 1);
                 }
                 parentFragment.presentFragment(fragment, removeLast);
+                if (!monoforum) {
+                    // TODO fix non viewmodel init
+                    fragment.setFetcher(parentFragment.profileChannelMessageFetcher, parentFragment.birthdayAssetsFetcher);
+                }
             }
         } else if (chat != null) {
             Bundle args = new Bundle();
@@ -591,11 +591,8 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
                 args.putLong("topic_id", parentFragment.getThreadMessage().getId());
             }
             ProfileActivity fragment = new ProfileActivity(args, sharedMediaPreloader);
-            if (!monoforum) {
-                fragment.setChatInfo(parentFragment.getCurrentChatInfo());
-            }
             if (fromChatAnimation) {
-                fragment.setPlayProfileAnimation(byAvatar ? 2 : 1);
+                args.putInt("playProfileAnimation", byAvatar ? 2 : 1);
             }
             parentFragment.presentFragment(fragment, removeLast);
         }

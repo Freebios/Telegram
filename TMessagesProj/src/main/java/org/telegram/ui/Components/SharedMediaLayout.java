@@ -132,7 +132,7 @@ import org.telegram.ui.Gifts.ProfileGiftsContainer;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PhotoViewer;
 import org.telegram.ui.PremiumPreviewFragment;
-import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Profile.ProfileActivity;
 import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stories.StoriesController;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
@@ -438,7 +438,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                 profileActivity.getContext(),
                 dialogCell.getDialogId(),
                 StoriesListPlaceProvider.of((RecyclerListView) dialogCell.getParent())
-                    .addBottomClip(profileActivity instanceof ProfileActivity && ((ProfileActivity) profileActivity).myProfile ? dp(68) : 0)
+                    .addBottomClip(profileActivity instanceof ProfileActivity && ((ProfileActivity) profileActivity).viewModel.getArgs().myProfile ? dp(68) : 0)
             );
         }
     }
@@ -763,11 +763,11 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                 }
             } else if (fragment instanceof ProfileActivity) {
                 ProfileActivity profileActivity = (ProfileActivity) fragment;
-                if (profileActivity.saved) {
+                if (profileActivity.viewModel.getArgs().saved) {
                     dialogId = profileActivity.getUserConfig().getClientUserId();
-                    topicId = profileActivity.getDialogId();
+                    topicId = profileActivity.viewModel.getDialogId();
                 } else {
-                    dialogId = profileActivity.getDialogId();
+                    dialogId = profileActivity.viewModel.getDialogId();
                     topicId = profileActivity.getTopicId();
 
                     if (dialogId != fragment.getUserConfig().getClientUserId()) {
@@ -2458,7 +2458,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             saveItem.setScaleX(0.4f);
             saveItem.setScaleY(0.4f);
 
-            giftsContainer = new ProfileGiftsContainer(profileActivity, context, profileActivity.getCurrentAccount(), ((ProfileActivity) profileActivity).getDialogId(), resourcesProvider) {
+            giftsContainer = new ProfileGiftsContainer(profileActivity, context, profileActivity.getCurrentAccount(), ((ProfileActivity) profileActivity).viewModel.getDialogId(), resourcesProvider) {
                 @Override
                 protected int processColor(int color) {
                     return SharedMediaLayout.this.processColor(color);
@@ -6851,7 +6851,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                     if (forward) {
                         storiesList.load(false, 30);
                     }
-                }).addBottomClip(profileActivity instanceof ProfileActivity && ((ProfileActivity) profileActivity).myProfile ? dp(68) : 0));
+                }).addBottomClip(profileActivity instanceof ProfileActivity && ((ProfileActivity) profileActivity).viewModel.getArgs().myProfile ? dp(68) : 0));
             }
         }
         updateForwardItem();

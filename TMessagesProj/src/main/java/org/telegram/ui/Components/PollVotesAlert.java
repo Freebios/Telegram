@@ -66,7 +66,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.ChatActivity;
-import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Profile.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -881,10 +881,10 @@ public class PollVotesAlert extends BottomSheet {
                 ProfileActivity fragment = new ProfileActivity(args);
                 if (userCell.currentUser != null) {
                     TLRPC.User currentUser = parentFragment.getCurrentUser();
-                    fragment.setPlayProfileAnimation(currentUser != null && currentUser.id == userCell.currentUser.id ? 1 : 0);
+                    args.putInt("playProfileAnimation", currentUser != null && currentUser.id == userCell.currentUser.id ? 1 : 0);
                 } else {
                     TLRPC.Chat currentChat = parentFragment.getCurrentChat();
-                    fragment.setPlayProfileAnimation(currentChat != null && currentChat.id == userCell.currentChat.id ? 1 : 0);
+                    args.putInt("playProfileAnimation", currentChat != null && currentChat.id == userCell.currentChat.id ? 1 : 0);
                 }
                 parentFragment.presentFragment(fragment);
             }

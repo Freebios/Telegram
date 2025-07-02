@@ -129,7 +129,7 @@ import org.telegram.ui.NotificationsCustomSettingsActivity;
 import org.telegram.ui.NotificationsSettingsActivity;
 import org.telegram.ui.PhotoViewer;
 import org.telegram.ui.PrivacyControlActivity;
-import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Profile.ProfileActivity;
 import org.telegram.ui.ProfileNotificationsActivity;
 import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stars.StarsIntroActivity;

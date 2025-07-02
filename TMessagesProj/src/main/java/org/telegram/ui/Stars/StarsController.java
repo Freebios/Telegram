@@ -68,6 +68,7 @@ import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PaymentFormActivity;
 import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.TON.TONIntroActivity;
+import org.telegram.ui.Profile.ProfileActivity;
 import org.telegram.ui.bots.BotWebViewSheet;
 
 import java.util.ArrayList;
@@ -2682,7 +2683,7 @@ public class StarsController {
                         chatFull.flags2 |= 262144;
                         MessagesController.getInstance(currentAccount).putChatFull(chatFull);
                     }
-                    if (fragment instanceof ProfileActivity && ((ProfileActivity) fragment).getDialogId() == dialogId) {
+                    if (fragment instanceof ProfileActivity && ((ProfileActivity) fragment).viewModel.getDialogId() == dialogId) {
                         if (((ProfileActivity) fragment).sharedMediaLayout != null) {
                             ((ProfileActivity) fragment).sharedMediaLayout.updateTabs(true);
                             ((ProfileActivity) fragment).sharedMediaLayout.scrollToPage(SharedMediaLayout.TAB_GIFTS);

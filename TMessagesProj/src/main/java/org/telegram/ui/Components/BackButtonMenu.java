@@ -31,7 +31,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Forum.ForumUtilities;
 import org.telegram.ui.DialogsActivity;
-import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Profile.ProfileActivity;
 import org.telegram.ui.TopicsFragment;
 
 import java.util.ArrayList;
@@ -179,7 +179,7 @@ public class BackButtonMenu {
                             nextFragmentDialogId = ((ChatActivity) nextFragment).getDialogId();
                             nextFragmentTopicId = ((ChatActivity) nextFragment).getTopicId();
                         } else if (nextFragment instanceof ProfileActivity) {
-                            nextFragmentDialogId = ((ProfileActivity) nextFragment).getDialogId();
+                            nextFragmentDialogId = ((ProfileActivity) nextFragment).viewModel.getDialogId();
                             nextFragmentTopicId = ((ProfileActivity) nextFragment).getTopicId();
                         }
                     }
@@ -358,7 +358,7 @@ public class BackButtonMenu {
                     try {
                         user = profileActivity.getUserInfo().user;
                     } catch (Exception ignore) {}
-                    dialogId = profileActivity.getDialogId();
+                    dialogId = profileActivity.viewModel.getDialogId();
                     folderId = 0;
                     filterId = 0;
                 } else {
