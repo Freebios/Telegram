@@ -27,7 +27,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_bots;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Profile.data.ProfileRepository;
 import org.telegram.ui.Profile.model.ProfileArgs;
 import org.telegram.ui.Profile.model.ProfileState;
@@ -42,7 +42,7 @@ public class ProfileViewModel implements NotificationCenter.NotificationCenterDe
 
     private final ProfileArgs args;
     private final ProfileRepository repository;
-    private ProfileState state = new ProfileState(new ArrayList<>(), -1, 0, 0, false, false, false, 0, false, false, false, false, false, false, false, false, false, false, false,false, false, false, false, false, false, false, null, new LongSparseArray<>(), null, null, null, null, null, null, null, null, null, null, null, null);
+    private ProfileState state = new ProfileState(new ArrayList<>(), -1, 0, 0, null, false, false, false, 0, false, false, false, false, false, false, false, false, false, false, false,false, false, false, false, false, false, false, null, new LongSparseArray<>(), null, null, null, null, null, null, null, null, null, null, null, null);
     private MutableLiveData<ProfileState> stateLiveData = new MutableLiveData<>(state);
     private MutableLiveData<ProfileUiEvent> profileUiEventLiveData = new MutableLiveData<>(null);
 
@@ -79,44 +79,45 @@ public class ProfileViewModel implements NotificationCenter.NotificationCenterDe
     }
 
     public boolean loadArgs() {
+        ProfileState state = this.state;
         if (args.userId != 0) {
             if (args.dialogId != 0) {
-                setState(state.withCurrentEncryptedChat(repository.getEncryptedChat(args.dialogId)));
+                state = state.withCurrentEncryptedChat(repository.getEncryptedChat(args.dialogId));
             }
-            setState(state.withUser(repository.getMessagesController().getUser(args.userId)));
+            state = state.withUser(repository.getMessagesController().getUser(args.userId));
+            System.out.println("ProfileViewModel loadArgs userId = " + args.userId);
             if (state.getUser() == null) {
                 return false;
             }
             repository.registerUserObserver(this);
-            setState(state.withUserBlocked(repository.isUserBlocked(args.userId)));
+            state = state.withUserBlocked(repository.isUserBlocked(args.userId));
 
             if (state.getUser().bot) {
-                setState(state.withBot(true));
+                state = state.withBot(true);
                 repository.getMediaDataController().loadBotInfo(state.getUser().id, state.getUser().id, true, classGuid);
             }
-            setState(state.withUserInfo(repository.getMessagesController().getUserFull(args.userId)));
+            state = state.withUserInfo(repository.getMessagesController().getUserFull(args.userId));
             repository.loadFullUser(args.userId, classGuid, true);
-            setState(state.withParticipantsMap(null));
+            state = state.withParticipantsMap(null);
 
-            setState(state.withUserSelf(UserObject.isUserSelf(state.getUser())));
-            setState(state.withActionBarAnimationColorFrom(args.actionBarColor));
+            state = state.withUserSelf(UserObject.isUserSelf(state.getUser()));
+            state = state.withActionBarAnimationColorFrom(args.actionBarColor);
             setProfileUiEvent(ProfileUiEvent.SET_USER_INFO);
         } else if (args.chatId != 0) {
             TLRPC.Chat currentChat = repository.waitChat(args.chatId);
-            setState(state
+            state = state
                     .withCurrentChat(currentChat)
                     .withCurrentChatMagagroup(currentChat != null && currentChat.megagroup)
                     .withCurrentChatCreator(currentChat != null && currentChat.creator)
                     .withCurrentChatLeft(currentChat != null && currentChat.left)
-                    .withCurrentChatKicked(currentChat != null && currentChat.kicked)
-            );
+                    .withCurrentChatKicked(currentChat != null && currentChat.kicked);
             if (currentChat == null) {
                 return false;
             }
             if (currentChat.megagroup) {
                 getChannelParticipants(true);
             } else {
-                setState(state.withParticipantsMap(null));
+                state = state.withParticipantsMap(null);
             }
 
             repository.registerChatObserver(this);
@@ -124,24 +125,24 @@ public class ProfileViewModel implements NotificationCenter.NotificationCenterDe
             NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.uploadStoryEnd);
             updateOnlineCount(true);
             if (state.getChatInfo() == null) {
-                setState(state.withChatInfo(repository.getMessagesController().getChatFull(args.chatId)));
+                state = state.withChatInfo(repository.getMessagesController().getChatFull(args.chatId));
             }
             if (ChatObject.isChannel(state.getCurrentChat())) {
                 repository.getMessagesController().loadFullChat(args.chatId, classGuid, true);
             } else if (state.getChatInfo() == null) {
-                setState(state.withChatInfo(repository.getMessagesStorage().loadChatInfo(args.chatId, false, null, false, false)));
+                state = state.withChatInfo(repository.getMessagesStorage().loadChatInfo(args.chatId, false, null, false, false));
             }
             setProfileUiEvent(ProfileUiEvent.SET_CHAT_INFO);
         } else {
             return false;
         }
 
-        setState(state.withLinkPrefix(repository.getMessagesController().linkPrefix));
+        state = state.withLinkPrefix(repository.getMessagesController().linkPrefix);
 
         if (args.expandPhoto) {
-            setState(state.withNeedSendMessage(true));
+            state = state.withNeedSendMessage(true);
         }
-        setState(state.withExpandPhoto(args.expandPhoto));
+        state = state.withExpandPhoto(args.expandPhoto);
         setPlayProfileAnimation(args.playProfileAnimation);
 
         repository.registerCommonObserver(this);
@@ -151,20 +152,24 @@ public class ProfileViewModel implements NotificationCenter.NotificationCenterDe
         }
 
         if (args.userId != 0) {
-            setState(state.withUser(repository.getMessagesController().getUser(args.userId)));
-
-            if (state.isUserSelf()) {
-                repository.getPassword((response, error) -> {
-                    if (response instanceof TL_account.TL_password) {
-                        setState(state.withCurrentPassword((TL_account.TL_password) response));
-                    }
-                });
-            }
+            state = state.withUser(repository.getMessagesController().getUser(args.userId));
         }
 
         // profileState.isUserSelf ?
         if (args.userId != 0 && UserObject.isUserSelf(repository.getMessagesController().getUser(args.userId)) && !args.myProfile) {
             repository.getMessagesController().getContentSettings(null);
+        }
+
+        state = state.withDialogId(getDialogId());
+
+        setState(state);
+
+        if (args.userId != 0 && state.isUserSelf()) {
+            repository.getPassword((response, error) -> {
+                if (response instanceof TL_account.TL_password) {
+                    setState(this.state.withCurrentPassword((TL_account.TL_password) response));
+                }
+            });
         }
 
         return true;

@@ -20,7 +20,7 @@ import org.telegram.ui.Cells.TextDetailCell;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -50,7 +50,8 @@ public class ProfileBirthdayEffect extends View {
         super(profileActivity.getContext());
 
         this.currentAccount = profileActivity.getCurrentAccount();
-        this.dialogId = profileActivity.viewModel.getDialogId();
+        // TODO fix getter
+        this.dialogId = profileActivity.getViewModel().getDialogId();
         this.profileActivity = profileActivity;
         this.fetcher = fetcher;
     }
@@ -181,21 +182,22 @@ public class ProfileBirthdayEffect extends View {
     }
 
     private void updateSourcePoint() {
-        RecyclerListView listView = profileActivity.getListView();
-        final int position = profileActivity.birthdayRow;
-        if (position < 0) return;
-        for (int i = 0; i < listView.getChildCount(); ++i) {
-            View child = listView.getChildAt(i);
-            final int childPosition = listView.getChildAdapterPosition(child);
-            if (position == childPosition && child instanceof TextDetailCell) {
-                TextView textView = ((TextDetailCell) child).textView;
-                sourcePoint.set(
-                        listView.getX() + child.getX() + textView.getX() + dp(12),
-                        listView.getY() + child.getY() + textView.getY() + textView.getMeasuredHeight() / 2f
-                );
-                return;
-            }
-        }
+        // TODO fix
+//        RecyclerListView listView = profileActivity.getListView();
+//        final int position = profileActivity.birthdayRow;
+//        if (position < 0) return;
+//        for (int i = 0; i < listView.getChildCount(); ++i) {
+//            View child = listView.getChildAt(i);
+//            final int childPosition = listView.getChildAdapterPosition(child);
+//            if (position == childPosition && child instanceof TextDetailCell) {
+//                TextView textView = ((TextDetailCell) child).textView;
+//                sourcePoint.set(
+//                        listView.getX() + child.getX() + textView.getX() + dp(12),
+//                        listView.getY() + child.getY() + textView.getY() + textView.getMeasuredHeight() / 2f
+//                );
+//                return;
+//            }
+//        }
     }
 
     @Override

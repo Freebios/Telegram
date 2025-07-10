@@ -40,7 +40,7 @@ import org.telegram.ui.Components.ButtonBounce;
 import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.Text;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 
 import java.util.List;
 

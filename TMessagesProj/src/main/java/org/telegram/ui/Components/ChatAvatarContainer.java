@@ -58,7 +58,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Business.BusinessLinksController;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Forum.ForumUtilities;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Stories.StoriesUtilities;
 import org.telegram.ui.TopicsFragment;
 
@@ -579,7 +579,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
                 parentFragment.presentFragment(fragment, removeLast);
                 if (!monoforum) {
                     // TODO fix non viewmodel init
-                    fragment.setFetcher(parentFragment.profileChannelMessageFetcher, parentFragment.birthdayAssetsFetcher);
+                    //fragment.setFetcher(parentFragment.profileChannelMessageFetcher, parentFragment.birthdayAssetsFetcher);
                 }
             }
         } else if (chat != null) {

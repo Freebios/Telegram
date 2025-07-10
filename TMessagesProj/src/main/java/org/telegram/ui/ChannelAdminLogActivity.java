@@ -146,7 +146,7 @@ import org.telegram.ui.Components.URLSpanNoUnderline;
 import org.telegram.ui.Components.URLSpanReplacement;
 import org.telegram.ui.Components.URLSpanUserMention;
 import org.telegram.ui.Components.UndoView;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -674,21 +674,22 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             }
         }).filter(s -> s != null).limit(4).toArray());
         SpannableStringBuilder ssb = new SpannableStringBuilder(replaceWithLink(LocaleController.formatPluralString(expandable ? "EventLogDeletedMultipleMessagesToExpand" : "EventLogDeletedMultipleMessages", messages.size(), names), "un1", user));
-        if (expandable && messages.size() > 1) {
-            ProfileActivity.ShowDrawable drawable = findDrawable(messageObject.messageText);
-            if (drawable == null) {
-                drawable = new ProfileActivity.ShowDrawable(getString(expanded ? R.string.EventLogDeletedMultipleMessagesHide : R.string.EventLogDeletedMultipleMessagesShow));
-                drawable.textDrawable.setTypeface(AndroidUtilities.bold());
-                drawable.textDrawable.setTextSize(dp(10));
-                drawable.setTextColor(Color.WHITE);
-                drawable.setBackgroundColor(0x1e000000);
-            } else {
-                drawable.textDrawable.setText(getString(expanded ? R.string.EventLogDeletedMultipleMessagesHide : R.string.EventLogDeletedMultipleMessagesShow), false);
-            }
-            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-            ssb.append(" S");
-            ssb.setSpan(new ColoredImageSpan(drawable), ssb.length() - 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        // TODO fix
+//        if (expandable && messages.size() > 1) {
+//            ProfileActivity.ShowDrawable drawable = findDrawable(messageObject.messageText);
+//            if (drawable == null) {
+//                drawable = new ProfileActivity.ShowDrawable(getString(expanded ? R.string.EventLogDeletedMultipleMessagesHide : R.string.EventLogDeletedMultipleMessagesShow));
+//                drawable.textDrawable.setTypeface(AndroidUtilities.bold());
+//                drawable.textDrawable.setTextSize(dp(10));
+//                drawable.setTextColor(Color.WHITE);
+//                drawable.setBackgroundColor(0x1e000000);
+//            } else {
+//                drawable.textDrawable.setText(getString(expanded ? R.string.EventLogDeletedMultipleMessagesHide : R.string.EventLogDeletedMultipleMessagesShow), false);
+//            }
+//            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+//            ssb.append(" S");
+//            ssb.setSpan(new ColoredImageSpan(drawable), ssb.length() - 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        }
         messageObject.messageText = ssb;
         MessageObject lastMessage = messages.size() <= 0 ? null : messages.get(messages.size() - 1);
         if (lastMessage != null) {
@@ -697,18 +698,6 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             messageObject.stableId = stableIdByEventExpand.get(lastMessage.eventId);
         }
         return messageObject;
-    }
-
-    public static ProfileActivity.ShowDrawable findDrawable(CharSequence messageText) {
-        if (messageText instanceof Spannable) {
-            ColoredImageSpan[] spans = ((Spannable) messageText).getSpans(0, messageText.length(), ColoredImageSpan.class);
-            for (int i = 0; i < spans.length; ++i) {
-                if (spans[i] != null && spans[i].drawable instanceof ProfileActivity.ShowDrawable) {
-                    return (ProfileActivity.ShowDrawable) spans[i].drawable;
-                }
-            }
-        }
-        return null;
     }
 
     private void setupExpandButton(MessageObject msg, int count) {

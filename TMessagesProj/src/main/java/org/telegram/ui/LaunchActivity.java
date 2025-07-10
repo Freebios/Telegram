@@ -202,7 +202,7 @@ import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.Components.spoilers.SpoilerEffect2;
 import org.telegram.ui.Components.voip.RTMPStreamPipOverlay;
 import org.telegram.ui.Components.voip.VoIPHelper;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Stars.ISuperRipple;
 import org.telegram.ui.Stars.StarGiftSheet;
 import org.telegram.ui.Stars.StarsController;
@@ -3251,7 +3251,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     bulletinText = "Logs enabled.";
                     ApplicationLoader.applicationContext.getSharedPreferences("systemConfig", Context.MODE_PRIVATE).edit().putBoolean("logsEnabled", BuildVars.LOGS_ENABLED = true).commit();
                 } else if (open_settings == 8) {
-                    ProfileActivity.sendLogs(LaunchActivity.this, false);
+                    // TODO fix
+//                    ProfileActivity.sendLogs(LaunchActivity.this, false);
                 } else if (open_settings == 9) {
                     bulletinText = "Logs disabled.";
                     ApplicationLoader.applicationContext.getSharedPreferences("systemConfig", Context.MODE_PRIVATE).edit().putBoolean("logsEnabled", BuildVars.LOGS_ENABLED = false).commit();
@@ -7036,9 +7037,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             boolean last = mainFragmentsStack.size() > 1 && mainFragmentsStack.get(mainFragmentsStack.size() - 1) instanceof ProfileActivity;
             if (last) {
                 ProfileActivity profileActivity = (ProfileActivity) mainFragmentsStack.get(mainFragmentsStack.size() - 1);
-                if (!profileActivity.isSettings()) {
-                    last = false;
-                }
+//               // TODO fix
+//                if (!profileActivity.isSettings()) {
+//                    last = false;
+//                }
             }
             rebuildAllFragments(last);
         } else if (id == NotificationCenter.suggestedLangpack) {
@@ -7533,7 +7535,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             undoView = dialogsActivity.getUndoView();
         } else if (fragment instanceof ProfileActivity) {
             ProfileActivity profileActivity = (ProfileActivity) fragment;
-            undoView = profileActivity.getUndoView();
+            // TODO fix
+//            undoView = profileActivity.getUndoView();
         }
         if (undoView != null) {
             undoView.showWithAction(0, action, chat);
@@ -7979,12 +7982,13 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     outState.putString("fragment", "wallpapers");
                 } else if (lastFragment instanceof ProfileActivity) {
                     ProfileActivity profileActivity = (ProfileActivity) lastFragment;
-                    if (profileActivity.isSettings()) {
-                        outState.putString("fragment", "settings");
-                    } else if (profileActivity.isChat() && args != null) {
-                        outState.putBundle("args", args);
-                        outState.putString("fragment", "chat_profile");
-                    }
+                    // TODO fix
+//                    if (profileActivity.isSettings()) {
+//                        outState.putString("fragment", "settings");
+//                    } else if (profileActivity.isChat() && args != null) {
+//                        outState.putBundle("args", args);
+//                        outState.putString("fragment", "chat_profile");
+//                    }
                 } else if (lastFragment instanceof ChannelCreateActivity && args != null && args.getInt("step") == 0) {
                     outState.putBundle("args", args);
                     outState.putString("fragment", "channel");

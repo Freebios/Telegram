@@ -19,13 +19,13 @@ public class ProfileArgs {
     public final String vcardFirstName;
     public final String vcardLastName;
     public final boolean reportSpam;
-    public final boolean expandPhoto;
     public final boolean myProfile;
     public final boolean openGifts;
     public final boolean openCommonChats;
     public final long dialogId;
     public final boolean preload_messages;
     public final int actionBarColor;
+    public final boolean expandPhoto;
     public final int playProfileAnimation;
 
     public ProfileArgs(Bundle arguments) {

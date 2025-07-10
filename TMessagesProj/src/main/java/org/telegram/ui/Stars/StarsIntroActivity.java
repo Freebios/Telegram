@@ -149,7 +149,7 @@ import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PhotoViewer;
 import org.telegram.ui.PostSuggestionsEditActivity;
 import org.telegram.ui.PrivacyControlActivity;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 import org.telegram.ui.Stories.recorder.HintView2;
 import org.telegram.ui.bots.AffiliateProgramFragment;
@@ -4130,7 +4130,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     sheet[0].dismiss();
                     final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     if (lastFragment != null) {
-                        lastFragment.presentFragment(ProfileActivity.of(referredUserId));
+                        // TODO fix
+                        //lastFragment.presentFragment(ProfileActivity.of(referredUserId));
                     }
                 });
                 tableView.addRow(getString(R.string.StarAffiliateCommission), percents(transaction.starref_commission_permille));
@@ -4147,7 +4148,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     sheet[0].dismiss();
                     final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     if (lastFragment != null) {
-                        lastFragment.presentFragment(ProfileActivity.of(botId));
+                        // TODO fix
+                        //lastFragment.presentFragment(ProfileActivity.of(botId));
                     }
                 });
             } else if (giveaway) {

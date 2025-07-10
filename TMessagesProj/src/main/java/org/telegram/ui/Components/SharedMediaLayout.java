@@ -132,7 +132,7 @@ import org.telegram.ui.Gifts.ProfileGiftsContainer;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PhotoViewer;
 import org.telegram.ui.PremiumPreviewFragment;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stories.StoriesController;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
@@ -434,12 +434,13 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
         if (profileActivity == null) return;
         if (profileActivity.getMessagesController().getStoriesController().hasStories(dialogCell.getDialogId())) {
             profileActivity.getOrCreateStoryViewer().doOnAnimationReady(onDone);
-            profileActivity.getOrCreateStoryViewer().open(
-                profileActivity.getContext(),
-                dialogCell.getDialogId(),
-                StoriesListPlaceProvider.of((RecyclerListView) dialogCell.getParent())
-                    .addBottomClip(profileActivity instanceof ProfileActivity && ((ProfileActivity) profileActivity).viewModel.getArgs().myProfile ? dp(68) : 0)
-            );
+            // TODO fix
+//            profileActivity.getOrCreateStoryViewer().open(
+//                profileActivity.getContext(),
+//                dialogCell.getDialogId(),
+//                StoriesListPlaceProvider.of((RecyclerListView) dialogCell.getParent())
+//                    .addBottomClip(profileActivity instanceof ProfileActivity && ((ProfileActivity) profileActivity).viewModel.getArgs().myProfile ? dp(68) : 0)
+//            );
         }
     }
 
@@ -763,25 +764,26 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                 }
             } else if (fragment instanceof ProfileActivity) {
                 ProfileActivity profileActivity = (ProfileActivity) fragment;
-                if (profileActivity.viewModel.getArgs().saved) {
-                    dialogId = profileActivity.getUserConfig().getClientUserId();
-                    topicId = profileActivity.viewModel.getDialogId();
-                } else {
-                    dialogId = profileActivity.viewModel.getDialogId();
-                    topicId = profileActivity.getTopicId();
-
-                    if (dialogId != fragment.getUserConfig().getClientUserId()) {
-                        fragment.getMessagesController().getSavedMessagesController().hasSavedMessages(dialogId, hasMessages -> {
-                            this.hasSavedMessages = hasMessages;
-                            this.checkedHasSavedMessages = true;
-                            if (hasSavedMessages) {
-                                for (int a = 0, N = delegates.size(); a < N; a++) {
-                                    delegates.get(a).mediaCountUpdated();
-                                }
-                            }
-                        });
-                    }
-                }
+                // TODO fix
+//                if (profileActivity.viewModel.getArgs().saved) {
+//                    dialogId = profileActivity.getUserConfig().getClientUserId();
+//                    topicId = profileActivity.viewModel.getDialogId();
+//                } else {
+//                    dialogId = profileActivity.viewModel.getDialogId();
+//                    topicId = profileActivity.getTopicId();
+//
+//                    if (dialogId != fragment.getUserConfig().getClientUserId()) {
+//                        fragment.getMessagesController().getSavedMessagesController().hasSavedMessages(dialogId, hasMessages -> {
+//                            this.hasSavedMessages = hasMessages;
+//                            this.checkedHasSavedMessages = true;
+//                            if (hasSavedMessages) {
+//                                for (int a = 0, N = delegates.size(); a < N; a++) {
+//                                    delegates.get(a).mediaCountUpdated();
+//                                }
+//                            }
+//                        });
+//                    }
+//                }
             } else if (fragment instanceof MediaActivity) {
                 MediaActivity mediaActivity = (MediaActivity) fragment;
                 dialogId = mediaActivity.getDialogId();
@@ -2458,25 +2460,26 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             saveItem.setScaleX(0.4f);
             saveItem.setScaleY(0.4f);
 
-            giftsContainer = new ProfileGiftsContainer(profileActivity, context, profileActivity.getCurrentAccount(), ((ProfileActivity) profileActivity).viewModel.getDialogId(), resourcesProvider) {
-                @Override
-                protected int processColor(int color) {
-                    return SharedMediaLayout.this.processColor(color);
-                }
-                @Override
-                protected void updatedReordering(boolean reordering) {
-                    saveItem.setVisibility(VISIBLE);
-                    saveItem.animate()
-                        .alpha(reordering ? 1.0f : 0.0f)
-                        .scaleX(reordering ? 1.0f : 0.4f)
-                        .scaleY(reordering ? 1.0f : 0.4f)
-                        .withEndAction(() -> {
-                            if (!reordering) saveItem.setVisibility(VISIBLE);
-                        })
-                        .start();
-                    updateOptionsSearch(true);
-                }
-            };
+            // TODO fix
+//            giftsContainer = new ProfileGiftsContainer(profileActivity, context, profileActivity.getCurrentAccount(), ((ProfileActivity) profileActivity).viewModel.getDialogId(), resourcesProvider) {
+//                @Override
+//                protected int processColor(int color) {
+//                    return SharedMediaLayout.this.processColor(color);
+//                }
+//                @Override
+//                protected void updatedReordering(boolean reordering) {
+//                    saveItem.setVisibility(VISIBLE);
+//                    saveItem.animate()
+//                        .alpha(reordering ? 1.0f : 0.0f)
+//                        .scaleX(reordering ? 1.0f : 0.4f)
+//                        .scaleY(reordering ? 1.0f : 0.4f)
+//                        .withEndAction(() -> {
+//                            if (!reordering) saveItem.setVisibility(VISIBLE);
+//                        })
+//                        .start();
+//                    updateOptionsSearch(true);
+//                }
+//            };
         }
 
         setWillNotDraw(false);
@@ -4672,7 +4675,8 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                     fragment1.finishFragment();
                     UndoView undoView = null;
                     if (profileActivity instanceof ProfileActivity) {
-                        undoView = ((ProfileActivity) profileActivity).getUndoView();
+                        // TODO fix
+//                        undoView = ((ProfileActivity) profileActivity).getUndoView();
                     }
                     if (undoView != null) {
                         if (dids.size() == 1) {
@@ -6847,11 +6851,12 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                 if (storiesList == null) {
                     return;
                 }
-                profileActivity.getOrCreateStoryViewer().open(getContext(), message.getId(), storiesList, StoriesListPlaceProvider.of(mediaPages[a].listView).with(forward -> {
-                    if (forward) {
-                        storiesList.load(false, 30);
-                    }
-                }).addBottomClip(profileActivity instanceof ProfileActivity && ((ProfileActivity) profileActivity).viewModel.getArgs().myProfile ? dp(68) : 0));
+                // TODO fix
+//                profileActivity.getOrCreateStoryViewer().open(getContext(), message.getId(), storiesList, StoriesListPlaceProvider.of(mediaPages[a].listView).with(forward -> {
+//                    if (forward) {
+//                        storiesList.load(false, 30);
+//                    }
+//                }).addBottomClip(profileActivity instanceof ProfileActivity && ((ProfileActivity) profileActivity).viewModel.getArgs().myProfile ? dp(68) : 0));
             }
         }
         updateForwardItem();
@@ -8697,7 +8702,8 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             }
             final BaseFragment fragment = new ChatActivity(args);
             if (profileActivity instanceof ProfileActivity) {
-                ((ProfileActivity) profileActivity).prepareBlurBitmap();
+                // TODO fix
+//                ((ProfileActivity) profileActivity).prepareBlurBitmap();
             }
 
             ActionBarPopupWindow.ActionBarPopupWindowLayout previewMenu = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getContext(), R.drawable.popup_fixed_alert, resourcesProvider, ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_SHOWN_FROM_BOTTOM);

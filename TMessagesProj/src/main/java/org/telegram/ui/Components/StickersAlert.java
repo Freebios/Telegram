@@ -99,7 +99,7 @@ import org.telegram.ui.ContentPreviewViewer;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PhotoViewer;
 import org.telegram.ui.PremiumPreviewFragment;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Stories.recorder.StoryEntry;
 
 import java.io.File;
@@ -1352,21 +1352,23 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count, TLRPC.TL_forumTopic topic, boolean showToast) {
                     if (!showToast) return;
                     AndroidUtilities.runOnUIThread(() -> {
-                        UndoView undoView;
-                        if (parentFragment instanceof ChatActivity) {
-                            undoView = ((ChatActivity) parentFragment).getUndoView();
-                        } else if (parentFragment instanceof ProfileActivity) {
-                            undoView = ((ProfileActivity) parentFragment).getUndoView();
-                        } else {
-                            undoView = null;
-                        }
-                        if (undoView != null) {
-                            if (dids.size() == 1) {
-                                undoView.showWithAction(dids.valueAt(0).id, UndoView.ACTION_FWD_MESSAGES, count);
-                            } else {
-                                undoView.showWithAction(0, UndoView.ACTION_FWD_MESSAGES, count, dids.size(), null, null);
-                            }
-                        }
+                        // TODO fix
+//                        UndoView undoView;
+//                        if (parentFragment instanceof ChatActivity) {
+//                            undoView = ((ChatActivity) parentFragment).getUndoView();
+//                        } else if (parentFragment instanceof ProfileActivity) {
+//                            // TODO fix
+//                            //undoView = ((ProfileActivity) parentFragment).getUndoView();
+//                        } else {
+//                            undoView = null;
+//                        }
+//                        if (undoView != null) {
+//                            if (dids.size() == 1) {
+//                                undoView.showWithAction(dids.valueAt(0).id, UndoView.ACTION_FWD_MESSAGES, count);
+//                            } else {
+//                                undoView.showWithAction(0, UndoView.ACTION_FWD_MESSAGES, count, dids.size(), null, null);
+//                            }
+//                        }
                     }, 100);
                 }
             };

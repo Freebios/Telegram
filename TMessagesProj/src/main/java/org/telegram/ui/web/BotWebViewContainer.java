@@ -128,7 +128,7 @@ import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
 import org.telegram.ui.Components.voip.CellFlickerDrawable;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PremiumPreviewFragment;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Stories.recorder.StoryEntry;
 import org.telegram.ui.Stories.recorder.StoryRecorder;
 import org.telegram.ui.WrappedResourceProvider;
@@ -2490,7 +2490,8 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
                 BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                 if (lastFragment == null || lastFragment.getParentLayout() == null) return;
                 final INavigationLayout parentLayout = lastFragment.getParentLayout();
-                lastFragment.presentFragment(ProfileActivity.of(botUser.id));
+                // TODO fix
+                //lastFragment.presentFragment(ProfileActivity.of(botUser.id));
                 AndroidUtilities.scrollToFragmentRow(parentLayout, "botPermissionLocation");
                 if (delegate != null) {
                     delegate.onCloseToTabs();

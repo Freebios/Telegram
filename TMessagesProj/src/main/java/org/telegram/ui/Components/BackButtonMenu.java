@@ -31,7 +31,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Forum.ForumUtilities;
 import org.telegram.ui.DialogsActivity;
-import org.telegram.ui.Profile.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.TopicsFragment;
 
 import java.util.ArrayList;
@@ -179,8 +179,9 @@ public class BackButtonMenu {
                             nextFragmentDialogId = ((ChatActivity) nextFragment).getDialogId();
                             nextFragmentTopicId = ((ChatActivity) nextFragment).getTopicId();
                         } else if (nextFragment instanceof ProfileActivity) {
-                            nextFragmentDialogId = ((ProfileActivity) nextFragment).viewModel.getDialogId();
-                            nextFragmentTopicId = ((ProfileActivity) nextFragment).getTopicId();
+                            // TODO fix
+                            //nextFragmentDialogId = ((ProfileActivity) nextFragment).viewModel.getDialogId();
+                            //nextFragmentTopicId = ((ProfileActivity) nextFragment).getTopicId();
                         }
                     }
                     if (nextFragmentDialogId != null && nextFragmentDialogId != pDialog.dialogId || topic != null && nextFragmentTopicId != null && topic.id != nextFragmentTopicId) {
@@ -331,63 +332,65 @@ public class BackButtonMenu {
             return dialogs;
         List<BaseFragment> fragmentsStack = parentLayout.getFragmentStack();
         List<PulledDialog> pulledDialogs = parentLayout.getPulledDialogs();
-        if (fragmentsStack != null) {
-            final int count = fragmentsStack.size();
-            for (int i = 0; i < count; ++i) {
-                BaseFragment fragment = fragmentsStack.get(i);
-                Class activity;
-                TLRPC.Chat chat;
-                TLRPC.User user = null;
-                long dialogId;
-                int folderId, filterId;
-                if (fragment instanceof ChatActivity) {
-                    activity = ChatActivity.class;
-                    ChatActivity chatActivity = (ChatActivity) fragment;
-                    if (chatActivity.getChatMode() != 0 || chatActivity.isReport()) {
-                        continue;
-                    }
-                    chat = chatActivity.getCurrentChat();
-                    user = chatActivity.getCurrentUser();
-                    dialogId = chatActivity.getDialogId();
-                    folderId = chatActivity.getDialogFolderId();
-                    filterId = chatActivity.getDialogFilterId();
-                } else if (fragment instanceof ProfileActivity) {
-                    activity = ProfileActivity.class;
-                    ProfileActivity profileActivity = (ProfileActivity) fragment;
-                    chat = profileActivity.getCurrentChat();
-                    try {
-                        user = profileActivity.getUserInfo().user;
-                    } catch (Exception ignore) {}
-                    dialogId = profileActivity.viewModel.getDialogId();
-                    folderId = 0;
-                    filterId = 0;
-                } else {
-                    continue;
-                }
-                if (dialogId != ignoreDialogId && !(ignoreDialogId == 0 && UserObject.isUserSelf(user))) {
-                    boolean alreadyAddedDialog = false;
-                    for (int d = 0; d < dialogs.size(); ++d) {
-                        if (dialogs.get(d).dialogId == dialogId) {
-                            alreadyAddedDialog = true;
-                            break;
-                        }
-                    }
-                    if (!alreadyAddedDialog) {
-                        PulledDialog pDialog = new PulledDialog();
-                        pDialog.activity = activity;
-                        pDialog.stackIndex = i;
-                        pDialog.chat = chat;
-                        pDialog.user = user;
-                        pDialog.dialogId = dialogId;
-                        pDialog.folderId = folderId;
-                        pDialog.filterId = filterId;
-                        if (pDialog.chat != null || pDialog.user != null) {
-                            dialogs.add(pDialog);
-                        }
-                    }
-                }
-            }
-        }
+        // TODO fix
+//        if (fragmentsStack != null) {
+//            final int count = fragmentsStack.size();
+//            for (int i = 0; i < count; ++i) {
+//                BaseFragment fragment = fragmentsStack.get(i);
+//                Class activity;
+//                TLRPC.Chat chat;
+//                TLRPC.User user = null;
+//                long dialogId;
+//                int folderId, filterId;
+//                if (fragment instanceof ChatActivity) {
+//                    activity = ChatActivity.class;
+//                    ChatActivity chatActivity = (ChatActivity) fragment;
+//                    if (chatActivity.getChatMode() != 0 || chatActivity.isReport()) {
+//                        continue;
+//                    }
+//                    chat = chatActivity.getCurrentChat();
+//                    user = chatActivity.getCurrentUser();
+//                    dialogId = chatActivity.getDialogId();
+//                    folderId = chatActivity.getDialogFolderId();
+//                    filterId = chatActivity.getDialogFilterId();
+//                } else if (fragment instanceof ProfileActivity) {
+//                    activity = ProfileActivity.class;
+//                    ProfileActivity profileActivity = (ProfileActivity) fragment;
+//                    //chat = profileActivity.getCurrentChat();
+//                    try {
+//                        //user = profileActivity.getUserInfo().user;
+//                    } catch (Exception ignore) {}
+//                    // TODO fix
+//                    //dialogId = profileActivity.viewModel.getDialogId();
+//                    folderId = 0;
+//                    filterId = 0;
+//                } else {
+//                    continue;
+//                }
+//                if (dialogId != ignoreDialogId && !(ignoreDialogId == 0 && UserObject.isUserSelf(user))) {
+//                    boolean alreadyAddedDialog = false;
+//                    for (int d = 0; d < dialogs.size(); ++d) {
+//                        if (dialogs.get(d).dialogId == dialogId) {
+//                            alreadyAddedDialog = true;
+//                            break;
+//                        }
+//                    }
+//                    if (!alreadyAddedDialog) {
+//                        PulledDialog pDialog = new PulledDialog();
+//                        pDialog.activity = activity;
+//                        pDialog.stackIndex = i;
+//                        pDialog.chat = chat;
+//                        pDialog.user = user;
+//                        pDialog.dialogId = dialogId;
+//                        pDialog.folderId = folderId;
+//                        pDialog.filterId = filterId;
+//                        if (pDialog.chat != null || pDialog.user != null) {
+//                            dialogs.add(pDialog);
+//                        }
+//                    }
+//                }
+//            }
+//        }
         if (pulledDialogs != null) {
             int count = pulledDialogs.size();
             for (int i = count - 1; i >= 0; --i) {

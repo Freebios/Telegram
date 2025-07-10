@@ -21,6 +21,8 @@ public class ProfileState {
     @With int playProfileAnimation;
     @With int avatarUploadingRequest;
 
+    @With Long dialogId;
+
     @With boolean isUserBlocked;
     @With boolean isBot;
     @With boolean isUserSelf;
