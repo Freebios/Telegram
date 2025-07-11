@@ -94,6 +94,7 @@ import org.telegram.ui.Components.ThanosEffect;
 import org.telegram.ui.Components.TimerParticles;
 import org.telegram.ui.Components.VideoPlayer;
 import org.telegram.ui.Components.ViewPagerFixed;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.io.File;

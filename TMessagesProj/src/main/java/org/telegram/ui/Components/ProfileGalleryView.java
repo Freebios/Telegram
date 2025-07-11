@@ -1,5 +1,8 @@
 package org.telegram.ui.Components;
 
+import static org.telegram.messenger.Utilities.blurBitmap;
+import static org.telegram.messenger.Utilities.cacheClearQueue;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -7,12 +10,23 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,7 +51,8 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.PinchToZoomHelper;
-import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileAvatarImageView;
 
 import java.util.ArrayList;
 
@@ -59,6 +74,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
     private boolean isDownReleased;
     private final boolean isProfileFragment;
     private ImageLocation uploadingImageLocation;
+    private boolean blur = false;
 
     private int currentAccount = UserConfig.selectedAccount;
 
@@ -265,7 +281,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
         imagesLayerNum = value;
     }
 
-    public ProfileGalleryView(Context context, long dialogId, ActionBar parentActionBar, RecyclerListView parentListView, ProfileActivity.AvatarImageView parentAvatarImageView, int parentClassGuid, Callback callback) {
+    public ProfileGalleryView(Context context, long dialogId, ActionBar parentActionBar, RecyclerListView parentListView, ProfileAvatarImageView parentAvatarImageView, int parentClassGuid, Callback callback) {
         super(context);
         setVisibility(View.GONE);
         setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -1090,7 +1106,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
         private BackupImageView parentAvatarImageView;
         private final ActionBar parentActionBar;
 
-        public ViewPagerAdapter(Context context, ProfileActivity.AvatarImageView parentAvatarImageView, ActionBar parentActionBar) {
+        public ViewPagerAdapter(Context context, ProfileAvatarImageView parentAvatarImageView, ActionBar parentActionBar) {
             this.context = context;
             this.parentAvatarImageView = parentAvatarImageView;
             this.parentActionBar = parentActionBar;
@@ -1362,6 +1378,10 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
         this.createThumbFromParent = createThumbFromParent;
     }
 
+    public void setBlur(boolean blur) {
+        this.blur = blur;
+    }
+
     private class AvatarImageView extends BackupImageView {
 
         private final int radialProgressSize = AndroidUtilities.dp(64f);
@@ -1379,29 +1399,80 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
             this.position = position;
             this.placeholderPaint = placeholderPaint;
             setLayerNum(imagesLayerNum);
+
+            blurImageReceiver = new ImageReceiver(this);
         }
 
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
             if (radialProgress != null) {
-                int paddingTop = (parentActionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0) + ActionBar.getCurrentActionBarHeight();
+                int paddingTop = 0;
+                if (parentActionBar != null) {
+                    paddingTop = (parentActionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0) + ActionBar.getCurrentActionBarHeight();
+                }
                 int paddingBottom = AndroidUtilities.dp2(80f);
                 radialProgress.setProgressRect((w - radialProgressSize) / 2, paddingTop + (h - paddingTop - paddingBottom - radialProgressSize) / 2, (w + radialProgressSize) / 2, paddingTop + (h - paddingTop - paddingBottom + radialProgressSize) / 2);
             }
         }
 
+        android.graphics.Rect srcRect = new android.graphics.Rect();
+        android.graphics.Rect destRect = new android.graphics.Rect();
         @Override
         protected void onDraw(Canvas canvas) {
             if (pinchToZoomHelper != null && pinchToZoomHelper.isInOverlayMode()) {
                 return;
             }
+
+            final Drawable drawable = getImageReceiver().getDrawable();
+            if (drawable instanceof BitmapDrawable) {
+                Bitmap originalBitmap = ((BitmapDrawable) drawable).getBitmap();
+
+                if (originalBitmap != null) {
+                    int viewWidth = getWidth();
+                    int viewHeight = getHeight();
+                    int imageWidth = originalBitmap.getWidth();
+                    int imageHeight = originalBitmap.getHeight();
+
+                    // --- 1. Draw main image, like "cover" ---
+                    // Scale to fill width, clamp height so image is never taller than original
+                    float scale = (float) viewWidth / imageWidth;
+                    int coverHeight = (int) (imageHeight * scale);
+
+                    if (blur) {
+                        // TODO : unless it's a video, move out of the draw logic
+                        Bitmap blurred = createBlurredBitmap(originalBitmap);
+                        Bitmap originalBlurred = blurBottomWithGradient(originalBitmap, blurred, AndroidUtilities.dp(0), AndroidUtilities.dp(20));
+                        // Draw original image with blurred bottom
+                        srcRect.set(0, 0, imageWidth, imageHeight);
+                        destRect.set(0, 0, viewWidth, coverHeight);
+                        canvas.drawBitmap(originalBlurred, srcRect, destRect, null);
+
+                        // 1. Draw blurred upside-down image if space below original
+                        if (viewHeight > coverHeight) {
+                            // TODO : unless it's a video, move out of the draw logic
+                            Bitmap upsideDownBlurred = Bitmap.createScaledBitmap(blurred, blurred.getWidth(), blurred.getHeight() * -1, true);
+
+                            // Draw upside down blurred image underneath original
+                            srcRect.set(0, 0, upsideDownBlurred.getWidth(), upsideDownBlurred.getHeight());
+                            destRect.set(0, coverHeight, viewWidth, coverHeight * 2);
+                            canvas.drawBitmap(upsideDownBlurred, srcRect, destRect, null);
+
+                            blurred.recycle();
+                            upsideDownBlurred.recycle();
+                            originalBlurred.recycle();
+                        }
+                    } else {
+                        super.onDraw(canvas);
+                    }
+                }
+            }
+
             if (radialProgress != null) {
                 int realPosition = getRealPosition(position);
                 if (hasActiveVideo) {
                     realPosition--;
                 }
-                final Drawable drawable = getImageReceiver().getDrawable();
                 boolean hideProgress;
                 if (realPosition < imagesUploadProgress.size() && imagesUploadProgress.get(realPosition) != null) {
                     hideProgress = imagesUploadProgress.get(realPosition) >= 1f;
@@ -1467,7 +1538,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
                     canvas.drawPath(path, placeholderPaint);
                 }
             }
-            super.onDraw(canvas);
+            //super.onDraw(canvas);
 
             if (radialProgress != null && radialProgress.getOverrideAlpha() > 0f) {
                 radialProgress.draw(canvas);
@@ -1480,6 +1551,87 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
             if (invalidateWithParent) {
                 ProfileGalleryView.this.invalidate();
             }
+        }
+
+        /**
+         * Blurs the bottom blurHeightPx pixels of the original bitmap and blends it
+         * with a gradient into the non-blurred image.
+         *
+         * @param bitmap       The original bitmap.
+         * @param blurHeightPx Height of the blurred area in pixels.
+         * @return A new bitmap with blurred bottom and gradient blend.
+         */
+        public Bitmap blurBottomWithGradient(Bitmap bitmap, Bitmap blurredBitmap, int blurHeightPx, int gradientHeightPx) {
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+
+            Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(result);
+
+            // Draw the original bitmap
+            canvas.drawBitmap(bitmap, 0, 0, null);
+
+            // Apply gradient mask
+            Paint alphaPaint = new Paint();
+            LinearGradient gradient = new LinearGradient(
+                    0, height - blurHeightPx - gradientHeightPx,
+                    0, height - blurHeightPx,
+                    0x00FFFFFF, // Transparent (alpha = 0)
+                    0xFFFFFFFF, // Opaque white (alpha = 255)
+                    Shader.TileMode.CLAMP);
+            alphaPaint.setShader(gradient);
+            alphaPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+
+            if (height - blurHeightPx - gradientHeightPx >= 0) {
+                // 4. Create a temporary bitmap to store just the blurred bottom slice, same as before
+                Bitmap blurredBottom = Bitmap.createBitmap(blurredBitmap, 0, height - blurHeightPx - gradientHeightPx, width, blurHeightPx + gradientHeightPx);
+
+                // 5. Draw the blurred bottom, with the paint (gradient alpha) over the same region
+                // Use a layer to apply the shader mask
+                int save;
+                if (android.os.Build.VERSION.SDK_INT >= 21) {
+                    save = canvas.saveLayer(
+                            0, height - blurHeightPx - gradientHeightPx, width, height, null);
+                } else {
+                    save = canvas.saveLayer(
+                            0, 0, width, height, null, Canvas.ALL_SAVE_FLAG);
+                }
+
+                // Draw blurred slice into layer
+                canvas.drawBitmap(blurredBottom, 0, height - blurHeightPx - gradientHeightPx, null);
+                // Draw gradient mask over blurred slice
+                canvas.drawRect(0, height - blurHeightPx - gradientHeightPx, width, height, alphaPaint);
+                canvas.restoreToCount(save);
+
+                blurredBottom.recycle();
+            }
+            return result;
+        }
+
+        private Bitmap createBlurredBitmap(Bitmap bitmap) {
+            Bitmap safeBitmap = bitmap.getConfig() == Bitmap.Config.ARGB_8888
+                    ? bitmap
+                    : bitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+            Bitmap blurredBitmap = Bitmap.createScaledBitmap(safeBitmap, safeBitmap.getWidth() / 8, safeBitmap.getHeight() / 8, true);
+
+            RenderScript rs = RenderScript.create(getContext());
+            Allocation input = Allocation.createFromBitmap(rs, blurredBitmap);
+            Allocation output = Allocation.createTyped(rs, input.getType());
+
+            ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+            blur.setRadius(25f);
+            blur.setInput(input);
+            blur.forEach(output);
+
+            output.copyTo(blurredBitmap);
+
+            input.destroy();
+            output.destroy();
+            blur.destroy();
+            rs.destroy();
+
+            return Bitmap.createScaledBitmap(blurredBitmap, bitmap.getWidth(), bitmap.getHeight(), true);
         }
     }
 

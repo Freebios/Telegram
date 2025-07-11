@@ -77,7 +77,7 @@ import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
 import org.telegram.ui.ContentPreviewViewer;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PremiumPreviewFragment;
-import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Profile.view.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -1483,21 +1483,23 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
                 @Override
                 protected void onSend(androidx.collection.LongSparseArray<TLRPC.Dialog> dids, int count, TLRPC.TL_forumTopic topic, boolean showToast) {
                     AndroidUtilities.runOnUIThread(() -> {
-                        UndoView undoView;
-                        if (fragment instanceof ChatActivity) {
-                            undoView = ((ChatActivity) fragment).getUndoView();
-                        } else if (fragment instanceof ProfileActivity) {
-                            undoView = ((ProfileActivity) fragment).getUndoView();
-                        } else {
-                            undoView = null;
-                        }
-                        if (undoView != null) {
-                            if (dids.size() == 1) {
-                                undoView.showWithAction(dids.valueAt(0).id, UndoView.ACTION_FWD_MESSAGES, count);
-                            } else {
-                                undoView.showWithAction(0, UndoView.ACTION_FWD_MESSAGES, count, dids.size(), null, null);
-                            }
-                        }
+                        //TODO fix
+//                        UndoView undoView;
+//                        if (fragment instanceof ChatActivity) {
+//                            undoView = ((ChatActivity) fragment).getUndoView();
+//                        } else if (fragment instanceof ProfileActivity) {
+//                            // TODO fix
+//                            //undoView = ((ProfileActivity) fragment).getUndoView();
+//                        } else {
+//                            undoView = null;
+//                        }
+//                        if (undoView != null) {
+//                            if (dids.size() == 1) {
+//                                undoView.showWithAction(dids.valueAt(0).id, UndoView.ACTION_FWD_MESSAGES, count);
+//                            } else {
+//                                undoView.showWithAction(0, UndoView.ACTION_FWD_MESSAGES, count, dids.size(), null, null);
+//                            }
+//                        }
                     }, 100);
                 }
             };

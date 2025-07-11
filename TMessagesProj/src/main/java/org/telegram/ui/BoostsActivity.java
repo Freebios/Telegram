@@ -66,6 +66,7 @@ import org.telegram.ui.Components.Premium.boosts.cells.statistics.GiftedUserCell
 import org.telegram.ui.Components.Premium.boosts.cells.statistics.GiveawayCell;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ScrollSlidingTextTabStrip;
+import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.Stars.StarsIntroActivity;
 
 import java.util.ArrayList;
