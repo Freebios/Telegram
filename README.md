@@ -6,6 +6,7 @@ I attempted a complete refactor and migration to MVVM model in order to improve 
 
 OK
 - state management according to the original behavior
+
 KO
 - Mostly the rest 🙃
 
