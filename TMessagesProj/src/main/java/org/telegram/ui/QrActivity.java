@@ -106,6 +106,7 @@ import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.StaticLayoutEx;
 import org.telegram.ui.Components.ThemeSmallPreviewView;
+import org.telegram.ui.Profile.view.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

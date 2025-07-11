@@ -66,9 +66,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SharedMediaLayout;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PaymentFormActivity;
-import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.TON.TONIntroActivity;
-import org.telegram.ui.Profile.ProfileActivity;
 import org.telegram.ui.Profile.view.ProfileActivity;
 import org.telegram.ui.bots.BotWebViewSheet;
 
